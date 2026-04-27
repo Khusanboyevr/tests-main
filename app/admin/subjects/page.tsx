@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy } from "@/lib/firebase-adapter";
 import { db } from "@/lib/firebase";
+import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { Subject } from "@/types";
 import { Plus, Edit2, Trash2, Search, X, Check, BookOpen, Clock } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -23,7 +24,7 @@ export default function AdminSubjects() {
         try {
             const q = query(collection(db, "subjects"), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
-            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Subject[];
+            const data = querySnapshot.docs.map((doc: QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() })) as Subject[];
             setSubjects(data);
         } catch (error) {
             toast.error("Failed to fetch subjects");

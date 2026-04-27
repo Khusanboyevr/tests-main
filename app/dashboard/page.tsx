@@ -6,6 +6,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
 import { collection, query, getDocs, orderBy, where, limit } from "@/lib/firebase-adapter";
 import { db } from "@/lib/firebase";
+import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { Subject, TestResult } from "@/types";
 import Link from "next/link";
 import { BookOpen, Trophy, Clock, ChevronRight, PlayCircle, BarChart3, AlertCircle, Star } from "lucide-react";
@@ -23,7 +24,7 @@ export default function DashboardPage() {
             try {
                 // Fetch Subjects
                 const subjectsSnap = await getDocs(query(collection(db, "subjects"), orderBy("createdAt", "desc")));
-                const subjectsData = subjectsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Subject[];
+                const subjectsData = subjectsSnap.docs.map((doc: QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() })) as Subject[];
                 setSubjects(subjectsData);
 
                 // Fetch Recent Results for current user
@@ -35,26 +36,26 @@ export default function DashboardPage() {
                         limit(5)
                     );
                     const resultsSnap = await getDocs(resultsQuery);
-                    const resultsData = resultsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TestResult[];
+                    const resultsData = resultsSnap.docs.map((doc: QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() })) as TestResult[];
                     setRecentResults(resultsData);
 
                     // Fetch Leaderboard
                     const usersSnap = await getDocs(collection(db, "users"));
-                    const usersData = usersSnap.docs.map(doc => ({ uid: doc.id, ...doc.data() as any }));
+                    const usersData = usersSnap.docs.map((doc: QueryDocumentSnapshot) => ({ uid: doc.id, ...doc.data() as any }));
 
                     const allResultsSnap = await getDocs(collection(db, "results"));
-                    const allResultsData = allResultsSnap.docs.map(doc => doc.data() as any);
+                    const allResultsData = allResultsSnap.docs.map((doc: QueryDocumentSnapshot) => doc.data() as any);
 
-                    const usersWithStats = usersData.map(u => {
-                        const userResultsList = allResultsData.filter(r => r.userId === u.uid || r.userEmail === u.email);
-                        const totalScore = userResultsList.reduce((sum, r) => sum + (r.score || 0), 0);
+                    const usersWithStats = usersData.map((u: any) => {
+                        const userResultsList = allResultsData.filter((r: any) => r.userId === u.uid || r.userEmail === u.email);
+                        const totalScore = userResultsList.reduce((sum: number, r: any) => sum + (r.score || 0), 0);
                         return { ...u, totalScore };
                     });
 
                     const top = usersWithStats
-                        .sort((a, b) => b.totalScore - a.totalScore)
+                        .sort((a: any, b: any) => b.totalScore - a.totalScore)
                         .slice(0, 3)
-                        .filter(u => u.totalScore > 0);
+                        .filter((u: any) => u.totalScore > 0);
                     setTopUsers(top);
                 }
             } catch (error) {

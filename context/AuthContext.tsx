@@ -1,7 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User as FirebaseUser } from "@/lib/firebase-adapter";
+import { onAuthStateChanged } from "@/lib/firebase-adapter";
+import type { User as FirebaseUser } from "firebase/auth";
 import { doc, getDoc } from "@/lib/firebase-adapter";
 import { auth, db } from '../lib/firebase';
 import { User, Role } from '../types';
@@ -32,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return;
         }
 
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
             if (firebaseUser) {
                 // Fetch user role from Firestore
                 const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));

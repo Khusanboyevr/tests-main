@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy } from "@/lib/firebase-adapter";
 import { db } from "@/lib/firebase";
+import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { TestResult, Subject } from "@/types";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Award, Clock, Users } from "lucide-react";
@@ -21,8 +22,8 @@ export default function AdminStats() {
                     getDocs(collection(db, "subjects"))
                 ]);
 
-                setResults(resultsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TestResult[]);
-                setSubjects(subjectsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Subject[]);
+                setResults(resultsSnap.docs.map((doc: QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() })) as TestResult[]);
+                setSubjects(subjectsSnap.docs.map((doc: QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() })) as Subject[]);
             } catch (error) {
                 console.error("Error fetching stats:", error);
             } finally {
